@@ -25,112 +25,187 @@ module processor(
     input rstd,
     input [7:0] sw,
     input [31:0] count,
-    output [5:0] op,
+    output [5:0] op_w,
     output [7:0] led
     );
 
-    wire [31:0] pc, ins, os, ot, dm_data, alu_result;
-//    wire [5:0] op;
-    wire [4:0] rs, rt, rd, wreg;
-    wire [10:0] aux;
-    wire [31:0] imm_dpl;
-    wire [25:0] addr;
-    wire [3:0] wren;
-    wire [31:0] dm_addr;
-    wire [31:0] dm532;
+    //wire [31:0] pc, ins, os, ot, dm_data, alu_result;
+    //wire [5:0] op;
+    //wire [4:0] rs, rt, rd, wreg;
+    //wire [10:0] aux;
+    //wire [31:0] imm_dpl;
+    //wire [25:0] addr;
+    //wire [3:0] wren;
+    //wire [31:0] dm_addr;
+
+    //fetch
+    wire [31:0] pc_f, ins_f;
+    wire [5:0] op_f;
+
+    //decode
+    wire [31:0] pc_d, ins_d, imm_dpl_d, os_d, ot_d;
+    wire [5:0] op_d;
+    wire [4:0] rs_d, rt_d, rd_d;
+    wire [10:0] aux_d;
+    wire [25:0] addr_d;
+
+    //execute
+    wire [31:0] pc_e, imm_dpl_e, os_e, ot_e, alu_result_e, dm_data_e, dm_addr_e;
+    wire [5:0] op_e;
+    wire [4:0] rt_e, rd_e, wreg_e;
+    wire [10:0] aux_e;
+    wire [25:0] addr_e;
+    wire [3:0] wren_e;
+
+    //write
+    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, alu_result_w;
+    wire [5:0] op_w;
+    wire [25:0] addr_w;
+    wire [4:0] wreg_w;
 
     pc pc0(
     .clk(sysclk),
     .rstd(rstd),
-    .op(op),
-    .os(os),
-    .ot(ot),
-    .addr(addr),
-    .imm_dpl(imm_dpl),
-    .pc(pc)
+    .op(op_w),
+    .os(os_w),
+    .ot(ot_w),
+    .addr(addr_w),
+    .imm_dpl(imm_dpl_w),
+    .pc_in(pc_w),
+    .pc_out(pc_f)
     );
 
     fetch fetch0(
-    .pc(pc),
-    .ins(ins)
+    .pc(pc_f),
+    .ins(ins_f)
     );
 
     decoder decoder0(
-    .ins(ins),
-    .op(op),
-    .rs(rs),
-    .rt(rt),
-    .rd(rd),
-    .aux(aux),
-    .imm_dpl(imm_dpl),
-    .addr(addr)
+    .ins(ins_d),
+    .op(op_d),
+    .rs(rs_d),
+    .rt(rt_d),
+    .rd(rd_d),
+    .aux(aux_d),
+    .imm_dpl(imm_dpl_d),
+    .addr(addr_d)
     );
 
     alu alu0(
-    .pc(pc),
-    .op(op),
-    .rs(rs),
-    .rt(rt),
-    .rd(rd),
-    .aux(aux),
-    .os(os),
-    .ot(ot),
-    .imm_dpl(imm_dpl),
-    .dm_data(dm_data),
-    .wreg(wreg),
-    .wren(wren),
-    .dm_addr(dm_addr),
-    .result2(alu_result)
+    .pc(pc_e),
+    .op(op_e),
+    .rt(rt_e),
+    .rd(rd_e),
+    .aux(aux_e),
+    .os(os_e),
+    .ot(ot_e),
+    .imm_dpl(imm_dpl_e),
+    .dm_data(dm_data_e),
+    .wreg(wreg_e),
+    .wren(wren_e),
+    .dm_addr(dm_addr_e),
+    .result2(alu_result_e)
     );
 
-    reg_file reg_fire0(
+    reg_file reg_file0(
     .clk(sysclk),
     .rstd(rstd),
-    .we(|wreg),
-    .r_addr1(rs),
-    .r_addr2(rt),
-    .r_data1(os),
-    .r_data2(ot),
-    .w_addr(wreg),
-    .w_data(alu_result)
+    .we(|wreg_w),
+    .r_addr1(rs_d),
+    .r_addr2(rt_d),
+    .w_addr(wreg_w),
+    .w_data(alu_result_w),
+    .r_data1(os_d),
+    .r_data2(ot_d)
     );
 
     data_mem data_mem0(
-    .address(dm_addr[7:0]),
+    .address(dm_addr_e[7:0]),
     .clk(sysclk),
-    .wren(wren[0]),
-    .w_data(alu_result[7:0]),
-    .r_data(dm_data[7:0]),
-    .dm532(dm532[7:0])
+    .wren(wren_e[0]),
+    .w_data(alu_result_e[7:0]),
+    .r_data(dm_data_e[7:0])
     );
 
     data_mem data_mem1(
-    .address(dm_addr[7:0]),
+    .address(dm_addr_e[7:0]),
     .clk(sysclk),
-    .wren(wren[1]),
-    .w_data(alu_result[15:8]),
-    .r_data(dm_data[15:8]),
-    .dm532(dm532[15:8])
+    .wren(wren_e[1]),
+    .w_data(alu_result_e[15:8]),
+    .r_data(dm_data_e[15:8])
     );
 
     data_mem data_mem2(
-    .address(dm_addr[7:0]),
+    .address(dm_addr_e[7:0]),
     .clk(sysclk),
-    .wren(wren[2]),
-    .w_data(alu_result[23:16]),
-    .r_data(dm_data[23:16]),
-    .dm532(dm532[23:16])
+    .wren(wren_e[2]),
+    .w_data(alu_result_e[23:16]),
+    .r_data(dm_data_e[23:16])
     );
 
     data_mem data_mem3(
-    .address(dm_addr[7:0]),
+    .address(dm_addr_e[7:0]),
     .clk(sysclk),
-    .wren(wren[3]),
-    .w_data(alu_result[31:24]),
-    .r_data(dm_data[31:24]),
-    .dm532(dm532[31:24])
+    .wren(wren_e[3]),
+    .w_data(alu_result_e[31:24]),
+    .r_data(dm_data_e[31:24])
     );
 
-initial $monitor("sysclk = %d, count = %d, pc = %d, ins = %b, op = %d, opr = %d, os = %d, ot = %d, alu_result = %d, dm532 = %h", sysclk, count, pc, ins, op, aux[4:0], os, ot, alu_result, dm532);
+    fd_reg fd_reg0(
+    .clk(sysclk),
+    .rstd(rstd),
+    .pc_in(pc_f),
+    .ins_in(ins_f),
+    .pc_out(pc_d),
+    .ins_out(ins_d)
+    );
+
+    de_reg de_reg0(
+    .clk(sysclk),
+    .rstd(rstd),
+    .pc_in(pc_d),
+    .op_in(op_d),
+    .rt_in(rt_d),
+    .rd_in(rd_d),
+    .aux_in(aux_d),
+    .imm_dpl_in(imm_dpl_d),
+    .addr_in(addr_d),
+    .os_in(os_d),
+    .ot_in(ot_d),
+    .pc_out(pc_e),
+    .op_out(op_e),
+    .rt_out(rt_e),
+    .rd_out(rd_e),
+    .aux_out(aux_e),
+    .imm_dpl_out(imm_dpl_e),
+    .addr_out(addr_e),
+    .os_out(os_e),
+    .ot_out(ot_e)
+    );
+
+    ew_reg ew_reg0(
+    .clk(sysclk),
+    .rstd(rstd),
+    .pc_in(pc_e),
+    .op_in(op_e),
+    .os_in(os_e),
+    .ot_in(ot_e),
+    .addr_in(addr_e),
+    .imm_dpl_in(imm_dpl_e),
+    .wreg_in(wreg_e),
+    .alu_result_in(alu_result_e),
+    .pc_out(pc_w),
+    .op_out(op_w),
+    .os_out(os_w),
+    .ot_out(ot_w),
+    .addr_out(addr_w),
+    .imm_dpl_out(imm_dpl_w),
+    .wreg_out(wreg_w),
+    .alu_result_out(alu_result_w)
+    );
+
+    assign op_f = ins_f[31:26];
+
+initial $monitor("sysclk = %d, count = %d, pc_f = %d, ins_f = %b, op_d = %d, opr_e = %d, os_w = %d, ot_w = %d, alu_result_w = %d", sysclk, count, pc_f, ins_f, op_d, aux_e[4:0], os_w, ot_w, alu_result_w);
 
 endmodule

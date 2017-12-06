@@ -23,7 +23,6 @@
 module alu(
     input [31:0] pc,
     input [5:0] op,
-    input [4:0] rs,
     input [4:0] rt,
     input [4:0] rd,
     input [10:0] aux,
@@ -84,7 +83,7 @@ module alu(
             6'd0:wreg_gen = rd;
             6'd1,6'd3,6'd4,6'd5,6'd6,6'd16,6'd18,6'd20:wreg_gen = rt;
             6'd41:wreg_gen = 5'd31;
-            default:wreg_gen = 5'd0;
+            default:wreg_gen = 5'd0;//jissai ha kakikonde inai
         endcase
     endfunction
 

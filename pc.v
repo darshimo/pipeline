@@ -6,10 +6,11 @@ module pc(
     input [31:0] ot,
     input [25:0] addr,
     input [31:0] imm_dpl,
-    output [31:0] pc
+    input [31:0] pc_in,
+    output [31:0] pc_out
     );
 
-    reg [31:0] pc;
+    reg [31:0] pc, counter;
     wire [31:0] branch, nonbranch;
 
     function [31:0] npc;
@@ -26,11 +27,19 @@ module pc(
             endcase
     endfunction
 
-    assign nonbranch = pc + 32'd1;
+    assign nonbranch = pc_in + 32'd1;
     assign branch = nonbranch + (imm_dpl>>2);
 
     always @(posedge clk or negedge rstd)begin
-        if(rstd == 0)pc<=32'h00000000;
-        else if(clk==1)pc <= npc(op, os, ot, branch, nonbranch, addr);
+        if(rstd==0)begin
+            pc<=32'h00000000;
+            counter<=32'h00000000;
+        end
+        else if(clk==1)if(pc_in==pc_out)begin
+            pc <= npc(op, os, ot, branch, nonbranch, addr);
+            counter<=counter+32'h00000001;
+        end
     end
+
+    assign pc_out = pc;
 endmodule

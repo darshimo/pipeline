@@ -34,7 +34,7 @@ module testbench();
     .rstd(rstd),
     .sw(sw),
     .count(count),
-    .op(op),
+    .op_w(op),
     .led(led)
     );
 
@@ -68,7 +68,7 @@ module testbench();
     endtask
 
     initial begin
-        $dumpfile("test4.vcd");
+        $dumpfile("test4_pipe.vcd");
         $dumpvars;
             rstd=1;
         #1  rstd=0;
