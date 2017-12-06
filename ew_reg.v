@@ -33,8 +33,8 @@ module ew_reg(
             ot <= ot_in;
             addr <= addr_in;
             imm_dpl <= imm_dpl_in;
-            if(pc!=pc_in)wreg <= wreg_in;
-            else wreg <= 5'd0;;
+            if(op_in!=55)wreg <= wreg_in;
+            else wreg <= 5'd0;
             alu_result <= alu_result_in;
         end
     end

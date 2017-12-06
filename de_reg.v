@@ -1,8 +1,11 @@
 module de_reg(
     input clk,
     input rstd,
+    input [4:0] wreg_e,
+    input [4:0] wreg_w,
     input [31:0] pc_in,
     input [5:0] op_in,
+    input [4:0] rs_in,
     input [4:0] rt_in,
     input [4:0] rd_in,
     input [10:0] aux_in,
@@ -12,6 +15,7 @@ module de_reg(
     input [31:0] ot_in,
     output [31:0] pc_out,
     output [5:0] op_out,
+    output [4:0] rs_out,
     output [4:0] rt_out,
     output [4:0] rd_out,
     output [10:0] aux_out,
@@ -23,7 +27,7 @@ module de_reg(
 
     reg [31:0] pc, imm_dpl, os, ot;
     reg [5:0] op;
-    reg [4:0] rt, rd;
+    reg [4:0] rs, rt, rd;
     reg [10:0] aux;
     reg [25:0] addr;
 
@@ -32,6 +36,7 @@ module de_reg(
         else if(clk==1)begin
             pc <= pc_in;
             op <= op_in;
+            rs <= rs_in;
             rt <= rt_in;
             rd <= rd_in;
             aux <= aux_in;
@@ -44,6 +49,7 @@ module de_reg(
 
     assign pc_out = pc;
     assign op_out = op;
+    assign rs_out = rs;
     assign rt_out = rt;
     assign rd_out = rd;
     assign aux_out = aux;

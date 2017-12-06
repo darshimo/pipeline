@@ -50,9 +50,9 @@ module processor(
     wire [25:0] addr_d;
 
     //execute
-    wire [31:0] pc_e, imm_dpl_e, os_e, ot_e, alu_result_e, dm_data_e, dm_addr_e;
+    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e;
     wire [5:0] op_e;
-    wire [4:0] rt_e, rd_e, wreg_e;
+    wire [4:0] rs_e, rt_e, rd_e, wreg_e;
     wire [10:0] aux_e;
     wire [25:0] addr_e;
     wire [3:0] wren_e;
@@ -67,11 +67,12 @@ module processor(
     .clk(sysclk),
     .rstd(rstd),
     .op(op_w),
+    .op_d(op_d),
+    .op_e(op_e),
     .os(os_w),
     .ot(ot_w),
     .addr(addr_w),
     .imm_dpl(imm_dpl_w),
-    .pc_in(pc_w),
     .pc_out(pc_f)
     );
 
@@ -97,8 +98,8 @@ module processor(
     .rt(rt_e),
     .rd(rd_e),
     .aux(aux_e),
-    .os(os_e),
-    .ot(ot_e),
+    .os(os_e2),
+    .ot(ot_e2),
     .imm_dpl(imm_dpl_e),
     .dm_data(dm_data_e),
     .wreg(wreg_e),
@@ -154,6 +155,9 @@ module processor(
     fd_reg fd_reg0(
     .clk(sysclk),
     .rstd(rstd),
+    .op_d(op_d),
+    .op_e(op_e),
+    .op_w(op_w),
     .pc_in(pc_f),
     .ins_in(ins_f),
     .pc_out(pc_d),
@@ -163,8 +167,11 @@ module processor(
     de_reg de_reg0(
     .clk(sysclk),
     .rstd(rstd),
+    .wreg_e(wreg_e),
+    .wreg_w(wreg_w),
     .pc_in(pc_d),
     .op_in(op_d),
+    .rs_in(rs_d),
     .rt_in(rt_d),
     .rd_in(rd_d),
     .aux_in(aux_d),
@@ -174,13 +181,14 @@ module processor(
     .ot_in(ot_d),
     .pc_out(pc_e),
     .op_out(op_e),
+    .rs_out(rs_e),
     .rt_out(rt_e),
     .rd_out(rd_e),
     .aux_out(aux_e),
     .imm_dpl_out(imm_dpl_e),
     .addr_out(addr_e),
-    .os_out(os_e),
-    .ot_out(ot_e)
+    .os_out(os_e1),
+    .ot_out(ot_e1)
     );
 
     ew_reg ew_reg0(
@@ -188,8 +196,8 @@ module processor(
     .rstd(rstd),
     .pc_in(pc_e),
     .op_in(op_e),
-    .os_in(os_e),
-    .ot_in(ot_e),
+    .os_in(os_e2),
+    .ot_in(ot_e2),
     .addr_in(addr_e),
     .imm_dpl_in(imm_dpl_e),
     .wreg_in(wreg_e),
@@ -202,6 +210,24 @@ module processor(
     .imm_dpl_out(imm_dpl_w),
     .wreg_out(wreg_w),
     .alu_result_out(alu_result_w)
+    );
+
+    forwarding_s forwarding_s0(
+    .clk(sysclk),
+    .rs(rs_e),
+    .os_in(os_e1),
+    .wreg_b(wreg_w),
+    .w_data_b(alu_result_w),
+    .os_out(os_e2)
+    );
+
+    forwarding_t forwarding_t0(
+    .clk(sysclk),
+    .rt(rt_e),
+    .ot_in(ot_e1),
+    .wreg_b(wreg_w),
+    .w_data_b(alu_result_w),
+    .ot_out(ot_e2)
     );
 
     assign op_f = ins_f[31:26];
