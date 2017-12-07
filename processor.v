@@ -63,12 +63,14 @@ module processor(
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
 
+    wire [2:0] jon;
+
     pc pc0(
     .clk(sysclk),
     .rstd(rstd),
+    .jon10(jon[1:0]),
+    .jon2(jon[2]),
     .op(op_w),
-    .op_d(op_d),
-    .op_e(op_e),
     .os(os_w),
     .ot(ot_w),
     .addr(addr_w),
@@ -155,9 +157,7 @@ module processor(
     fd_reg fd_reg0(
     .clk(sysclk),
     .rstd(rstd),
-    .op_d(op_d),
-    .op_e(op_e),
-    .op_w(op_w),
+    .jon210(jon),
     .pc_in(pc_f),
     .ins_in(ins_f),
     .pc_out(pc_d),
@@ -228,6 +228,13 @@ module processor(
     .wreg_b(wreg_w),
     .w_data_b(alu_result_w),
     .ot_out(ot_e2)
+    );
+
+    stoper stoper0(
+    .op_d(op_d),
+    .op_e(op_e),
+    .op_w(op_w),
+    .jon(jon)
     );
 
     assign op_f = ins_f[31:26];

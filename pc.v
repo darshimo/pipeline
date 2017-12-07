@@ -1,9 +1,9 @@
 module pc(
     input clk,
     input rstd,
+    input [1:0] jon10,
+    input jon2,
     input [5:0] op,//op_w
-    input [5:0] op_d,
-    input [5:0] op_e,
     input [31:0] os,
     input [31:0] ot,
     input [25:0] addr,
@@ -14,8 +14,6 @@ module pc(
 
     reg [31:0] pc, counter;
     wire [31:0] branch, nonbranch;
-    wire [1:0] jon12;
-    wire jon3;
 
     function [31:0] npc;
         input [5:0] op;
@@ -31,14 +29,6 @@ module pc(
             endcase
     endfunction
 
-    function jon;
-        input [5:0] op;
-            case(op)
-                6'd32,6'd33,6'd34,6'd35,6'd40,6'd41,6'd42:jon=1;
-                default:jon=0;
-            endcase
-    endfunction
-
     assign nonbranch = pc;
     assign branch = pc + (imm_dpl>>2);
 
@@ -48,15 +38,12 @@ module pc(
             counter<=32'h00000000;
         end
         else if(clk==1)begin
-            if(|jon12)pc <= pc;
-            else if(jon3) pc <= npc(op, os, ot, branch, nonbranch, addr);
+            if(|jon10)pc <= pc;
+            else if(jon2) pc <= npc(op, os, ot, branch, nonbranch, addr);
             else pc <= pc + 1;
             counter<=counter+32'h00000001;
         end
     end
 
-    assign jon12[0] = jon(op_d);
-    assign jon12[1] = jon(op_e);
-    assign jon3 = jon(op);
     assign pc_out = pc;
 endmodule
