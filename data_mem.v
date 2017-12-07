@@ -3,11 +3,12 @@ module data_mem(
     input clk,
     input wren,
     input [7:0] w_data,
-    output [7:0] r_data
+    output [7:0] r_data,
+    output [7:0] dm532
     );
 
     reg [7:0] d_mem [0:255];
-    wire [7:0] dm576, dm520, dm524, dm528, dm532, dm536, dm540, dm544, dm548, dm552, dm556;
+    wire [7:0] dm576, dm520, dm524, dm528, dm536, dm540, dm544, dm548, dm552, dm556;
 
     always @(posedge clk)begin
         if(wren==0)d_mem[address] <= w_data;

@@ -8,7 +8,6 @@ module pc(
     input [31:0] ot,
     input [25:0] addr,
     input [31:0] imm_dpl,
-    input [31:0] pc_in,
     output [31:0] pc_out
     );
 

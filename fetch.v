@@ -5,7 +5,7 @@ module fetch(
 
     reg [31:0] ins_mem [0:255];
 
-    initial $readmemb("sample4.bin",ins_mem);
+    initial $readmemb("/home/denjo/Documents/3a/06/projects/processor_forward/pipeline/sample4.bin",ins_mem);
 
     assign ins = ins_mem[pc[7:0]];
 

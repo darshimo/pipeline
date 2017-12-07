@@ -25,17 +25,24 @@ module testbench();
     reg [31:0] count;
     wire [7:0] led; // output �� wire
     wire [5:0] op;
+    wire oled_dc, oled_res, oled_sclk, oled_sdin, oled_vbat, oled_vdd;
 
 //    wire [3:0] operand1, operand2;
 //    wire [7:0] hoge;
     
     processor processor0( // simulation ��������� instance ��
     .sysclk(clk),
-    .rstd(rstd),
+    .cpu_resetn(rstd),
     .sw(sw),
     .count(count),
     .op_w(op),
-    .led(led)
+    .led(led),
+    .oled_dc(oled_dc),
+    .oled_res(oled_res),
+    .oled_sclk(oled_sclk),
+    .oled_sdin(oled_sdin),
+    .oled_vbat(oled_vbat),
+    .oled_vdd(oled_vdd)
     );
 
 //    assign operand1 = sw[7:4];
@@ -45,7 +52,6 @@ module testbench();
     initial begin
         count = 0;
         clk <= 1'b0;
-        sw <= 8'b0;
     end
 
     always #5 begin
@@ -68,8 +74,6 @@ module testbench();
     endtask
 
     initial begin
-        $dumpfile("test4_pipe.vcd");
-        $dumpvars;
             rstd=1;
         #1  rstd=0;
         #2  rstd=1;
@@ -79,6 +83,8 @@ module testbench();
         while(~&op)begin
             wait_posedge_clk(1);
         end
+        
+        wait_posedge_clk(10);
 
         $finish;
     end

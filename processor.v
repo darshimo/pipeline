@@ -22,11 +22,17 @@
 
 module processor(
     input sysclk,
-    input rstd,
+    input cpu_resetn,
     input [7:0] sw,
     input [31:0] count,
     output [5:0] op_w,
-    output [7:0] led
+    output [7:0] led,
+    output oled_dc,
+    output oled_res,
+    output oled_sclk,
+    output oled_sdin,
+    output oled_vbat,
+    output oled_vdd
     );
 
     //wire [31:0] pc, ins, os, ot, dm_data, alu_result;
@@ -37,6 +43,13 @@ module processor(
     //wire [25:0] addr;
     //wire [3:0] wren;
     //wire [31:0] dm_addr;
+    
+    wire rstd;
+    assign rstd = cpu_resetn;
+    
+    wire [31:0] dm532;
+    reg [7:0] data_oled;
+    wire [7:0] data_oled_b;
 
     //fetch
     wire [31:0] pc_f, ins_f;
@@ -59,12 +72,12 @@ module processor(
 
     //write
     wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, alu_result_w;
-    wire [5:0] op_w;
+    //wire [5:0] op_w;
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
 
     wire [2:0] jon;
-
+    
     pc pc0(
     .clk(sysclk),
     .rstd(rstd),
@@ -127,7 +140,8 @@ module processor(
     .clk(sysclk),
     .wren(wren_e[0]),
     .w_data(alu_result_e[7:0]),
-    .r_data(dm_data_e[7:0])
+    .r_data(dm_data_e[7:0]),
+    .dm532(dm532[7:0])
     );
 
     data_mem data_mem1(
@@ -135,7 +149,8 @@ module processor(
     .clk(sysclk),
     .wren(wren_e[1]),
     .w_data(alu_result_e[15:8]),
-    .r_data(dm_data_e[15:8])
+    .r_data(dm_data_e[15:8]),
+    .dm532(dm532[15:8])
     );
 
     data_mem data_mem2(
@@ -143,7 +158,8 @@ module processor(
     .clk(sysclk),
     .wren(wren_e[2]),
     .w_data(alu_result_e[23:16]),
-    .r_data(dm_data_e[23:16])
+    .r_data(dm_data_e[23:16]),
+    .dm532(dm532[23:16])
     );
 
     data_mem data_mem3(
@@ -151,7 +167,8 @@ module processor(
     .clk(sysclk),
     .wren(wren_e[3]),
     .w_data(alu_result_e[31:24]),
-    .r_data(dm_data_e[31:24])
+    .r_data(dm_data_e[31:24]),
+    .dm532(dm532[31:24])
     );
 
     fd_reg fd_reg0(
@@ -236,9 +253,33 @@ module processor(
     .op_w(op_w),
     .jon(jon)
     );
+    
+    
+    display_top display_top0(
+    .SYSCLK_IP(sysclk),
+    .SW_IP(sw),
+    .CPU_RESETN_IP(rstd),
+    .LED_OP(led),
+    .OLED_DC_OP(oled_dc),     //Data/Command Pin
+    .OLED_RES_OP(oled_res),    //OLED RES
+    .OLED_SCLK_OP(oled_sclk),   //SPI Clock
+    .OLED_SDIN_OP(oled_sdin),   //SPI data out
+    .OLED_VBAT_OP(oled_vbat),   //VBAT enable
+    .OLED_VDD_OP(oled_vdd),     //VDD enable
+    .WE_IP(1),
+    .WRITE_ADDR_IP(6'b111111),
+    .WRITE_DATA_IP(data_oled)
+    );
 
     assign op_f = ins_f[31:26];
+    
+    assign data_oled_b = (dm532==32'h00000315)?8'h2B:8'h2D;
+    
+    always @(posedge sysclk or negedge rstd)begin
+        if(rstd==0)data_oled <= 8'h2C;
+        else if(op_w==6'b111111)data_oled <= data_oled_b;
+    end
 
-initial $monitor("sysclk = %d, count = %d, pc_f = %d, ins_f = %b, op_d = %d, opr_e = %d, os_w = %d, ot_w = %d, alu_result_w = %d", sysclk, count, pc_f, ins_f, op_d, aux_e[4:0], os_w, ot_w, alu_result_w);
+//initial $monitor("sysclk = %d, count = %d, pc_f = %d, ins_f = %b, op_d = %d, opr_e = %d, os_w = %d, ot_w = %d, alu_result_w = %d", sysclk, count, pc_f, ins_f, op_d, aux_e[4:0], os_w, ot_w, alu_result_w);
 
 endmodule
