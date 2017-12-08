@@ -1,0 +1,18 @@
+single clock
+1:
+2:
+3:
+4:
+
+#count when op_w is 6'd63
+forwarding
+1:24
+2:67
+3:5289
+4:233744
+
++bunki 40,41,(42<-not related to clock)
+1:24
+2:67
+3:4507
+4:204852

@@ -45,11 +45,12 @@ module processor(
     //wire [31:0] dm_addr;
     
     wire rstd;
+    reg [31:0] total_count;
     assign rstd = cpu_resetn;
     
-    wire [31:0] dm532;
+    wire [31:0] dm532, dm900, dm576, r9;
     reg [7:0] data_oled;
-    wire [7:0] data_oled_b;
+    wire [7:0] hoge1, hoge2, hoge3, hoge4;
 
     //fetch
     wire [31:0] pc_f, ins_f;
@@ -76,18 +77,18 @@ module processor(
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
 
-    wire [2:0] jon;
+    wire [1:0] jon_d;
     
     pc pc0(
     .clk(sysclk),
     .rstd(rstd),
-    .jon10(jon[1:0]),
-    .jon2(jon[2]),
+    .jon_d(jon_d),
+    .addr_d(addr_d),
     .op(op_w),
     .os(os_w),
     .ot(ot_w),
-    .addr(addr_w),
     .imm_dpl(imm_dpl_w),
+    .pc_in(pc_w),
     .pc_out(pc_f)
     );
 
@@ -132,7 +133,8 @@ module processor(
     .w_addr(wreg_w),
     .w_data(alu_result_w),
     .r_data1(os_d),
-    .r_data2(ot_d)
+    .r_data2(ot_d),
+    .r9(r9)
     );
 
     data_mem data_mem0(
@@ -141,7 +143,9 @@ module processor(
     .wren(wren_e[0]),
     .w_data(alu_result_e[7:0]),
     .r_data(dm_data_e[7:0]),
-    .dm532(dm532[7:0])
+    .dm532(dm532[7:0]),
+    .dm900(dm900[7:0]),
+    .dm576(dm576[7:0])
     );
 
     data_mem data_mem1(
@@ -150,7 +154,9 @@ module processor(
     .wren(wren_e[1]),
     .w_data(alu_result_e[15:8]),
     .r_data(dm_data_e[15:8]),
-    .dm532(dm532[15:8])
+    .dm532(dm532[15:8]),
+    .dm900(dm900[15:8]),
+    .dm576(dm576[15:8])
     );
 
     data_mem data_mem2(
@@ -159,7 +165,9 @@ module processor(
     .wren(wren_e[2]),
     .w_data(alu_result_e[23:16]),
     .r_data(dm_data_e[23:16]),
-    .dm532(dm532[23:16])
+    .dm532(dm532[23:16]),
+    .dm900(dm900[23:16]),
+    .dm576(dm576[23:16])
     );
 
     data_mem data_mem3(
@@ -168,13 +176,15 @@ module processor(
     .wren(wren_e[3]),
     .w_data(alu_result_e[31:24]),
     .r_data(dm_data_e[31:24]),
-    .dm532(dm532[31:24])
+    .dm532(dm532[31:24]),
+    .dm900(dm900[31:24]),
+    .dm576(dm576[31:24])
     );
 
     fd_reg fd_reg0(
     .clk(sysclk),
     .rstd(rstd),
-    .jon210(jon),
+    .jon_d(jon_d),
     .pc_in(pc_f),
     .ins_in(ins_f),
     .pc_out(pc_d),
@@ -247,13 +257,10 @@ module processor(
     .ot_out(ot_e2)
     );
 
-    stoper stoper0(
-    .op_d(op_d),
-    .op_e(op_e),
-    .op_w(op_w),
-    .jon(jon)
+    stopper stopper0(
+    .op(op_d),
+    .jon(jon_d)
     );
-    
     
     display_top display_top0(
     .SYSCLK_IP(sysclk),
@@ -266,20 +273,29 @@ module processor(
     .OLED_SDIN_OP(oled_sdin),   //SPI data out
     .OLED_VBAT_OP(oled_vbat),   //VBAT enable
     .OLED_VDD_OP(oled_vdd),     //VDD enable
-    .WE_IP(1),
+    .WE_IP(1'b1),
     .WRITE_ADDR_IP(6'b111111),
     .WRITE_DATA_IP(data_oled)
     );
 
     assign op_f = ins_f[31:26];
     
-    assign data_oled_b = (dm532==32'h00000315)?8'h2B:8'h2D;
+    assign hoge1 = (r9==32'd55)?8'h2B:8'h2D;
+    assign hoge2 = (dm576==32'd987)?8'h2B:8'h2D;
+    assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
+    assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
     
     always @(posedge sysclk or negedge rstd)begin
-        if(rstd==0)data_oled <= 8'h2C;
-        else if(op_w==6'b111111)data_oled <= data_oled_b;
+        if(rstd==0)begin
+            data_oled <= 8'h2C;
+            total_count <= 32'd0;
+        end
+        else if(op_w==6'b111111)begin
+            data_oled <= hoge4;
+            total_count <= count;
+        end
     end
 
-//initial $monitor("sysclk = %d, count = %d, pc_f = %d, ins_f = %b, op_d = %d, opr_e = %d, os_w = %d, ot_w = %d, alu_result_w = %d", sysclk, count, pc_f, ins_f, op_d, aux_e[4:0], os_w, ot_w, alu_result_w);
+initial $monitor("sysclk = %d, count = %d, pc_f = %d, op_d = %d, opr_e = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_f, op_d, aux_e[4:0], r9, dm576, dm900, dm532, data_oled, total_count);
 
 endmodule

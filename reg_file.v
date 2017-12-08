@@ -7,11 +7,11 @@ module reg_file(
     input [4:0] w_addr,
     input [31:0] w_data,
     output [31:0] r_data1,
-    output [31:0] r_data2
+    output [31:0] r_data2,
+    output [31:0] r9
 );
 
     reg [31:0] mem [0:31];
-    wire [31:0] r9;
 
     always @(posedge clk or negedge rstd) begin
         if(rstd==0)mem[0] <= 32'h00000000;

@@ -4,11 +4,13 @@ module data_mem(
     input wren,
     input [7:0] w_data,
     output [7:0] r_data,
-    output [7:0] dm532
+    output [7:0] dm532,
+    output [7:0] dm900,
+    output [7:0] dm576
     );
 
     reg [7:0] d_mem [0:255];
-    wire [7:0] dm576, dm520, dm524, dm528, dm536, dm540, dm544, dm548, dm552, dm556;
+    wire [7:0] dm520, dm524, dm528, dm536, dm540, dm544, dm548, dm552, dm556;
 
     always @(posedge clk)begin
         if(wren==0)d_mem[address] <= w_data;
@@ -26,5 +28,6 @@ module data_mem(
     assign dm548 = d_mem[137]; //sample3 9
     assign dm552 = d_mem[138]; //sample3 10
     assign dm556 = d_mem[139]; //sample3 11
+    assign dm900 = d_mem[225]; //sample3 97
 
 endmodule
