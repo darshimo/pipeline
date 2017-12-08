@@ -1,0 +1,3 @@
+in vivado
+1. remove dump* from testbench
+2. remove monitor from processor

@@ -1,8 +1,8 @@
 single clock
-1:
-2:
-3:
-4:
+1:21
+2:64
+3:2445
+4:105014
 
 #count when op_w is 6'd63
 forwarding
