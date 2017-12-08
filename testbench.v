@@ -50,7 +50,7 @@ module testbench();
 //    assign hoge = led[7:0];
 
     initial begin
-        $dumpfile("test4_pipe.vcd");
+        $dumpfile("sim4_pipe.vcd");
         $dumpvars;
         count = 0;
         clk <= 1'b0;
@@ -86,7 +86,7 @@ module testbench();
             wait_posedge_clk(1);
         end
         
-        wait_posedge_clk(10);
+        wait_posedge_clk(3);
 
         $finish;
     end

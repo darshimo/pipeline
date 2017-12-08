@@ -292,10 +292,10 @@ module processor(
         end
         else if(op_w==6'b111111)begin
             data_oled <= hoge4;
-            total_count <= count;
+            total_count <= count + 32'd1;
         end
     end
 
-initial $monitor("sysclk = %d, count = %d, pc_f = %d, op_d = %d, opr_e = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_f, op_d, aux_e[4:0], r9, dm576, dm900, dm532, data_oled, total_count);
+initial $monitor("sysclk = %d, count = %d, pc_f = %d, op_d = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_f, op_d, r9, dm576, dm900, dm532, data_oled, total_count);
 
 endmodule
