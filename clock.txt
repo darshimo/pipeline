@@ -4,7 +4,7 @@ single clock
 3:2446
 4:105015
 
-#count when op_w is 6'd63
+#count when 6'd63 has passed W step
 forwarding
 1:25
 2:68
