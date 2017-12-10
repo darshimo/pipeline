@@ -24,8 +24,8 @@ module processor(
     input sysclk,
     input cpu_resetn,
     input [7:0] sw,
-    input [31:0] count,
-    output [5:0] op_w,
+    input [31:0] count,//remove in vivado
+    output [5:0] op_w,//remove in vivado
     output [7:0] led,
     output oled_dc,
     output oled_res,
@@ -44,9 +44,7 @@ module processor(
     //wire [3:0] wren;
     //wire [31:0] dm_addr;
     
-    wire rstd;
     reg [31:0] total_count;
-    assign rstd = cpu_resetn;
     
     wire [31:0] dm532, dm900, dm576, r9;
     reg [7:0] data_oled;
@@ -81,7 +79,7 @@ module processor(
     
     pc pc0(
     .clk(sysclk),
-    .rstd(rstd),
+    .rstd(cpu_resetn),
     .jon_d(jon_d),
     .addr_d(addr_d),
     .op(op_w),
@@ -126,7 +124,7 @@ module processor(
 
     reg_file reg_file0(
     .clk(sysclk),
-    .rstd(rstd),
+    .rstd(cpu_resetn),
     .we(|wreg_w),
     .r_addr1(rs_d),
     .r_addr2(rt_d),
@@ -183,7 +181,7 @@ module processor(
 
     fd_reg fd_reg0(
     .clk(sysclk),
-    .rstd(rstd),
+    .rstd(cpu_resetn),
     .jon_d(jon_d),
     .pc_in(pc_f),
     .ins_in(ins_f),
@@ -193,7 +191,7 @@ module processor(
 
     de_reg de_reg0(
     .clk(sysclk),
-    .rstd(rstd),
+    .rstd(cpu_resetn),
     .wreg_e(wreg_e),
     .wreg_w(wreg_w),
     .pc_in(pc_d),
@@ -220,7 +218,7 @@ module processor(
 
     ew_reg ew_reg0(
     .clk(sysclk),
-    .rstd(rstd),
+    .rstd(cpu_resetn),
     .pc_in(pc_e),
     .op_in(op_e),
     .os_in(os_e2),
@@ -265,7 +263,7 @@ module processor(
     display_top display_top0(
     .SYSCLK_IP(sysclk),
     .SW_IP(sw),
-    .CPU_RESETN_IP(rstd),
+    .CPU_RESETN_IP(cpu_resetn),
     .LED_OP(led),
     .OLED_DC_OP(oled_dc),     //Data/Command Pin
     .OLED_RES_OP(oled_res),    //OLED RES
@@ -285,8 +283,8 @@ module processor(
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
     assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
     
-    always @(posedge sysclk or negedge rstd)begin
-        if(rstd==0)begin
+    always @(posedge sysclk or negedge cpu_resetn)begin
+        if(cpu_resetn==0)begin
             data_oled <= 8'h2C;
             total_count <= 32'd0;
         end
