@@ -31,7 +31,7 @@ module pc(
 
     always @(posedge clk or negedge rstd)begin
         if(rstd==0)begin
-            finish <= 0;
+            finish <= 1'b0;
             pc<=32'h00000000;
             jump_count <= 2'd0;
         end
