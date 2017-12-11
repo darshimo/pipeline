@@ -236,22 +236,22 @@ module processor(
     .dm_data_out(dm_data_w)
     );
 
-    forwarding_s forwarding_s0(
+    forwarding forwarding0(
     .clk(sysclk),
-    .rs(rs_e),
-    .os_in(os_e1),
+    .reg_in(rs_e),
+    .operand_in(os_e1),
     .wreg_b(wreg_w),
     .w_data_b(result_w),
-    .os_out(os_e2)
+    .operand_out(os_e2)
     );
 
-    forwarding_t forwarding_t0(
+    forwarding forwarding1(
     .clk(sysclk),
-    .rt(rt_e),
-    .ot_in(ot_e1),
+    .reg_in(rt_e),
+    .operand_in(ot_e1),
     .wreg_b(wreg_w),
     .w_data_b(result_w),
-    .ot_out(ot_e2)
+    .operand_out(ot_e2)
     );
 
     stopper stopper0(
