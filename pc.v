@@ -11,6 +11,7 @@ module pc(
     output [31:0] pc_out
     );
 
+    reg finish;
     reg [31:0] pc;
     wire [31:0] branch, nonbranch;
     reg [1:0] jump_count;
@@ -33,10 +34,15 @@ module pc(
             pc<=32'h00000000;
             jump_count <= 2'd0;
         end
+        else if(finish);
         else if(clk==1)begin
             //aboun pc
             if(jon_d==2'b01)pc <= addr_d>>2;
             else if(jump_count==2'd1)pc<=npc(op, os, ot, branch, nonbranch);
+            else if(op==6'b111111)begin
+                finish<=1'b1;
+                pc <= pc_in;
+            end
             else pc <= pc + 32'd1;
             //about jump_count
             if(jon_d[1]==1'd1)jump_count <= 2'd2;

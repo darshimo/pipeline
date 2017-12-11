@@ -181,6 +181,7 @@ module processor(
     fd_reg fd_reg0(
     .clk(sysclk),
     .rstd(cpu_resetn),
+    .op_d(op_d),
     .jon_d(jon_d),
     .pc_in(pc_f),
     .ins_in(ins_f),
@@ -289,12 +290,12 @@ module processor(
             total_count <= 32'd0;
         end
         else if(op_w==6'b111111)begin
-            data_oled <= hoge4;
+            data_oled <= hoge1;
             total_count <= count + 32'd1;
         end
         else count <= count + 31'd1;
     end
 
-initial $monitor("sysclk = %d, count = %d, pc_f = %d, op_d = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_f, op_d, r9, dm576, dm900, dm532, data_oled, total_count);
+initial $monitor("sysclk = %d, count = %d, pc_d = %d, op_d = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_d, op_d, r9, dm576, dm900, dm532, data_oled, total_count);
 
 endmodule
