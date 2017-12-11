@@ -29,10 +29,8 @@ module alu(
     input [31:0] os,
     input [31:0] ot,
     input [31:0] imm_dpl,
-    input [31:0] dm_data,
     output [4:0] wreg,
     output [3:0] wren,
-    output [31:0] dm_addr,
     output [31:0] result2
     );
     
@@ -59,7 +57,7 @@ module alu(
             
     function [31:0] alu2;
         input [5:0] op;
-        input [31:0] result1, os, imm_dpl, dm_data, ot, pc;
+        input [31:0] result1, os, imm_dpl, ot, pc;
         case(op)//decide operation
             6'd0:alu2 = result1;
             6'd1:alu2 = os + imm_dpl;
@@ -67,9 +65,6 @@ module alu(
             6'd4:alu2 = os & imm_dpl;
             6'd5:alu2 = os | imm_dpl;
             6'd6:alu2 = os ^ imm_dpl;
-            6'd16:alu2 = dm_data;
-            6'd18:alu2 = {{16{dm_data[15]}},dm_data[15:0]};
-            6'd20:alu2 = {{24{dm_data[7]}},dm_data[7:0]};
             6'd24,6'd26,6'd28:alu2 = ot;
             6'd41:alu2 = pc + 32'd1;
             default:alu2 = 32'hffffffff;
@@ -98,10 +93,9 @@ module alu(
     endfunction
 
     assign result1 = alu1(opr, shift, os, ot);
-    assign result2 = alu2(op, result1, os, imm_dpl, dm_data, ot, pc);
+    assign result2 = alu2(op, result1, os, imm_dpl, ot, pc);
     assign opr = aux[4:0];
     assign shift = aux[10:6];
-    assign dm_addr = (os+imm_dpl)>>>2;
     assign wreg = wreg_gen(op, rd, rt);
     assign wren = wren_gen(op);
 endmodule

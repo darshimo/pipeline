@@ -60,7 +60,7 @@ module processor(
     wire [25:0] addr_d;
 
     //execute
-    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e;
+    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e, result_e;
     wire [5:0] op_e;
     wire [4:0] rs_e, rt_e, rd_e, wreg_e;
     wire [10:0] aux_e;
@@ -68,7 +68,7 @@ module processor(
     wire [3:0] wren_e;
 
     //write
-    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, alu_result_w;
+    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, result_w;
     //wire [5:0] op_w;
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
@@ -113,10 +113,8 @@ module processor(
     .os(os_e2),
     .ot(ot_e2),
     .imm_dpl(imm_dpl_e),
-    .dm_data(dm_data_e),
     .wreg(wreg_e),
     .wren(wren_e),
-    .dm_addr(dm_addr_e),
     .result2(alu_result_e)
     );
 
@@ -127,7 +125,7 @@ module processor(
     .r_addr1(rs_d),
     .r_addr2(rt_d),
     .w_addr(wreg_w),
-    .w_data(alu_result_w),
+    .w_data(result_w),
     .r_data1(os_d),
     .r_data2(ot_d),
     .r9(r9)
@@ -225,7 +223,7 @@ module processor(
     .addr_in(addr_e),
     .imm_dpl_in(imm_dpl_e),
     .wreg_in(wreg_e),
-    .alu_result_in(alu_result_e),
+    .result_in(result_e),
     .pc_out(pc_w),
     .op_out(op_w),
     .os_out(os_w),
@@ -233,7 +231,7 @@ module processor(
     .addr_out(addr_w),
     .imm_dpl_out(imm_dpl_w),
     .wreg_out(wreg_w),
-    .alu_result_out(alu_result_w)
+    .result_out(result_w)
     );
 
     forwarding_s forwarding_s0(
@@ -241,7 +239,7 @@ module processor(
     .rs(rs_e),
     .os_in(os_e1),
     .wreg_b(wreg_w),
-    .w_data_b(alu_result_w),
+    .w_data_b(result_w),
     .os_out(os_e2)
     );
 
@@ -250,7 +248,7 @@ module processor(
     .rt(rt_e),
     .ot_in(ot_e1),
     .wreg_b(wreg_w),
-    .w_data_b(alu_result_w),
+    .w_data_b(result_w),
     .ot_out(ot_e2)
     );
 
@@ -259,6 +257,13 @@ module processor(
     .jon(jon_d)
     );
     
+    choice choice0(
+    .op(op_e),
+    .alu_result(alu_result_e),
+    .dm_data(dm_data_e),
+    .result(result_e)
+    );
+
     display_top display_top0(
     .SYSCLK_IP(sysclk),
     .SW_IP(sw),
@@ -279,6 +284,8 @@ module processor(
     assign hoge2 = (dm576==32'd987)?8'h2B:8'h2D;
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
     assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
+
+    assign dm_addr_e = (os_e2+imm_dpl_e)>>>2;
 
     always @(posedge sysclk or negedge cpu_resetn)begin
         if(cpu_resetn==0)begin
