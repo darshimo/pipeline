@@ -22,7 +22,6 @@ module testbench();
     reg clk; // input �� reg
     reg rstd;
     reg [7:0] sw;
-    reg [31:0] count;
     wire [7:0] led; // output �� wire
     wire [5:0] op;
     wire oled_dc, oled_res, oled_sclk, oled_sdin, oled_vbat, oled_vdd;
@@ -34,7 +33,6 @@ module testbench();
     .sysclk(clk),
     .cpu_resetn(rstd),
     .sw(sw),
-    .count(count),
     .op_w(op),
     .led(led),
     .oled_dc(oled_dc),
@@ -52,16 +50,12 @@ module testbench();
     initial begin
         $dumpfile("sim4_pipe.vcd");
         $dumpvars;
-        count = 0;
         clk <= 1'b0;
     end
 
     always #5 begin
         clk <= ~clk;
     end
-
-    always @(posedge clk)
-        count = count + 1;
 
     task wait_posedge_clk;
         input   n;

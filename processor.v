@@ -24,7 +24,6 @@ module processor(
     input sysclk,
     input cpu_resetn,
     input [7:0] sw,
-    input [31:0] count,//remove in vivado
     output [5:0] op_w,//remove in vivado
     output [7:0] led,
     output oled_dc,
@@ -44,7 +43,7 @@ module processor(
     //wire [3:0] wren;
     //wire [31:0] dm_addr;
     
-    reg [31:0] total_count;
+    reg [31:0] count, total_count;
     
     wire [31:0] dm532, dm900, dm576, r9;
     reg [7:0] data_oled;
@@ -282,16 +281,18 @@ module processor(
     assign hoge2 = (dm576==32'd987)?8'h2B:8'h2D;
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
     assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
-    
+
     always @(posedge sysclk or negedge cpu_resetn)begin
         if(cpu_resetn==0)begin
             data_oled <= 8'h2C;
+            count <= 0;
             total_count <= 32'd0;
         end
         else if(op_w==6'b111111)begin
             data_oled <= hoge4;
             total_count <= count + 32'd1;
         end
+        else count <= count + 31'd1;
     end
 
 initial $monitor("sysclk = %d, count = %d, pc_f = %d, op_d = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_f, op_d, r9, dm576, dm900, dm532, data_oled, total_count);
