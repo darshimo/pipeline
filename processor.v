@@ -60,7 +60,7 @@ module processor(
     wire [25:0] addr_d;
 
     //execute
-    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e, result_e;
+    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e;
     wire [5:0] op_e;
     wire [4:0] rs_e, rt_e, rd_e, wreg_e;
     wire [10:0] aux_e;
@@ -68,7 +68,7 @@ module processor(
     wire [3:0] wren_e;
 
     //write
-    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, result_w;
+    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, alu_result_w, dm_data_w, result_w;
     //wire [5:0] op_w;
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
@@ -223,7 +223,8 @@ module processor(
     .addr_in(addr_e),
     .imm_dpl_in(imm_dpl_e),
     .wreg_in(wreg_e),
-    .result_in(result_e),
+    .alu_result_in(alu_result_e),
+    .dm_data_in(dm_data_e),
     .pc_out(pc_w),
     .op_out(op_w),
     .os_out(os_w),
@@ -231,7 +232,8 @@ module processor(
     .addr_out(addr_w),
     .imm_dpl_out(imm_dpl_w),
     .wreg_out(wreg_w),
-    .result_out(result_w)
+    .alu_result_out(alu_result_w),
+    .dm_data_out(dm_data_w)
     );
 
     forwarding_s forwarding_s0(
@@ -258,10 +260,10 @@ module processor(
     );
     
     choice choice0(
-    .op(op_e),
-    .alu_result(alu_result_e),
-    .dm_data(dm_data_e),
-    .result(result_e)
+    .op(op_w),
+    .alu_result(alu_result_w),
+    .dm_data(dm_data_w),
+    .result(result_w)
     );
 
     display_top display_top0(

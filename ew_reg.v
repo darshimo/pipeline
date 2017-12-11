@@ -8,7 +8,8 @@ module ew_reg(
     input [25:0] addr_in,
     input [31:0] imm_dpl_in,
     input [4:0] wreg_in,
-    input [31:0] result_in,
+    input [31:0] alu_result_in,
+    input [31:0] dm_data_in,
     output [31:0] pc_out,
     output [5:0] op_out,
     output [31:0] os_out,
@@ -16,10 +17,11 @@ module ew_reg(
     output [25:0] addr_out,
     output [31:0] imm_dpl_out,
     output [4:0] wreg_out,
-    output [31:0] result_out
+    output [31:0] alu_result_out,
+    output [31:0] dm_data_out
     );
 
-    reg [31:0] pc, os, ot, imm_dpl, result;
+    reg [31:0] pc, os, ot, imm_dpl, alu_result, dm_data;
     reg [4:0] wreg;
     reg [5:0] op;
     reg [25:0] addr;
@@ -35,7 +37,8 @@ module ew_reg(
             imm_dpl <= imm_dpl_in;
             if(op_in!=55)wreg <= wreg_in;
             else wreg <= 5'd0;
-            result <= result_in;
+            alu_result <= alu_result_in;
+            dm_data <= dm_data_in;
         end
     end
 
@@ -46,5 +49,6 @@ module ew_reg(
     assign addr_out = addr;
     assign imm_dpl_out = imm_dpl;
     assign wreg_out = wreg;
-    assign result_out = result;
+    assign alu_result_out = alu_result;
+    assign dm_data_out = dm_data;
 endmodule
