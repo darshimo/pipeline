@@ -48,7 +48,7 @@ module testbench();
 //    assign hoge = led[7:0];
 
     initial begin
-        $dumpfile("sim1_pipe.vcd");
+        $dumpfile("sim4_pipe.vcd");
         $dumpvars;
         clk <= 1'b0;
     end

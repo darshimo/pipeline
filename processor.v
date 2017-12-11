@@ -287,7 +287,7 @@ module processor(
             total_count <= 32'd0;
         end
         else if(op_w==6'b111111)begin
-            data_oled <= hoge1;
+            data_oled <= hoge4;
             total_count <= count + 32'd1;
         end
         else count <= count + 31'd1;
