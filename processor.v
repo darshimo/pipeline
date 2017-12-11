@@ -51,7 +51,6 @@ module processor(
 
     //fetch
     wire [31:0] pc_f, ins_f;
-    wire [5:0] op_f;
 
     //decode
     wire [31:0] pc_d, ins_d, imm_dpl_d, os_d, ot_d;
@@ -276,8 +275,6 @@ module processor(
     .WRITE_DATA_IP(data_oled)
     );
 
-    assign op_f = ins_f[31:26];
-    
     assign hoge1 = (r9==32'd55)?8'h2B:8'h2D;
     assign hoge2 = (dm576==32'd987)?8'h2B:8'h2D;
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;

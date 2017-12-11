@@ -22,7 +22,10 @@ module fd_reg(
         end
         else if(finish);
         else if(clk==1)begin
-            if(op_d==6'b111111)finish<=1'b1;
+            if(op_d==6'b111111)begin
+                finish<=1'b1;
+                ins<=32'hdc000000;
+            end
             else if(stop)ins <= 32'hdc000000;
             else begin
                 pc <= pc_in;
