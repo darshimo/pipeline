@@ -65,7 +65,6 @@ module alu(
             6'd4:alu2 = os & imm_dpl;
             6'd5:alu2 = os | imm_dpl;
             6'd6:alu2 = os ^ imm_dpl;
-            6'd24,6'd26,6'd28:alu2 = ot;
             6'd41:alu2 = pc + 32'd1;
             default:alu2 = 32'hffffffff;
         endcase
