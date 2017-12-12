@@ -53,7 +53,7 @@ module processor(
     wire [31:0] pc_f, ins_f;
 
     //decode
-    wire [31:0] pc_d, ins_d, imm_dpl_d, os_d1, os_d2, ot_d1, ot_d2;
+    wire [31:0] pc_d, ins_d, imm_dpl_d, os_d1, os_d2, ot_d1, ot_d2, dm_addr_d;
     wire [5:0] op_d;
     wire [4:0] rs_d, rt_d, rd_d;
     wire [10:0] aux_d;
@@ -70,7 +70,6 @@ module processor(
     //write
     wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, result_w;
     //wire [5:0] op_w;
-    wire [25:0] addr_w;
     wire [4:0] wreg_w;
 
     wire [1:0] jon_d;
@@ -197,6 +196,7 @@ module processor(
     .rt_in(rt_d),
     .rd_in(rd_d),
     .aux_in(aux_d),
+    .dm_addr_in(dm_addr_d),
     .imm_dpl_in(imm_dpl_d),
     .addr_in(addr_d),
     .os_in(os_d2),
@@ -207,6 +207,7 @@ module processor(
     .rt_out(rt_e),
     .rd_out(rd_e),
     .aux_out(aux_e),
+    .dm_addr_out(dm_addr_e),
     .imm_dpl_out(imm_dpl_e),
     .addr_out(addr_e),
     .os_out(os_e),
@@ -220,7 +221,6 @@ module processor(
     .op_in(op_e),
     .os_in(os_e),
     .ot_in(ot_e),
-    .addr_in(addr_e),
     .imm_dpl_in(imm_dpl_e),
     .wreg_in(wreg_e),
     .result_in(result_e),
@@ -228,7 +228,6 @@ module processor(
     .op_out(op_w),
     .os_out(os_w),
     .ot_out(ot_w),
-    .addr_out(addr_w),
     .imm_dpl_out(imm_dpl_w),
     .wreg_out(wreg_w),
     .result_out(result_w)
@@ -267,7 +266,7 @@ module processor(
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
     assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
 
-    assign dm_addr_e = (os_e+imm_dpl_e)>>>2;
+    assign dm_addr_d = (os_d2+imm_dpl_d)>>>2;
     assign os_d2 = (rs_d==5'd0)?32'h00000000:(rs_d==wreg_e)?result_e:(rs_d==wreg_w)?result_w:os_d1;
     assign ot_d2 = (rt_d==5'd0)?32'h00000000:(rt_d==wreg_e)?result_e:(rt_d==wreg_w)?result_w:ot_d1;
 
