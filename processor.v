@@ -62,7 +62,7 @@ module processor(
     //execute
     wire [31:0] pc_e, imm_dpl_e, os_e, ot_e, alu_result_e, dm_data_e, dm_addr_e, result_e;
     wire [5:0] op_e;
-    wire [4:0] rs_e, rt_e, rd_e, wreg_e;
+    wire [4:0] rt_e, rd_e, wreg_e;
     wire [10:0] aux_e;
     wire [25:0] addr_e;
     wire [3:0] wren_e;
@@ -192,7 +192,6 @@ module processor(
     .wreg_w(wreg_w),
     .pc_in(pc_d),
     .op_in(op_d),
-    .rs_in(rs_d),
     .rt_in(rt_d),
     .rd_in(rd_d),
     .aux_in(aux_d),
@@ -203,7 +202,6 @@ module processor(
     .ot_in(ot_d2),
     .pc_out(pc_e),
     .op_out(op_e),
-    .rs_out(rs_e),
     .rt_out(rt_e),
     .rd_out(rd_e),
     .aux_out(aux_e),
