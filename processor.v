@@ -53,14 +53,14 @@ module processor(
     wire [31:0] pc_f, ins_f;
 
     //decode
-    wire [31:0] pc_d, ins_d, imm_dpl_d, os_d, ot_d;
+    wire [31:0] pc_d, ins_d, imm_dpl_d, os_d1, os_d2, ot_d1, ot_d2;
     wire [5:0] op_d;
     wire [4:0] rs_d, rt_d, rd_d;
     wire [10:0] aux_d;
     wire [25:0] addr_d;
 
     //execute
-    wire [31:0] pc_e, imm_dpl_e, os_e1, ot_e1, os_e2, ot_e2, alu_result_e, dm_data_e, dm_addr_e;
+    wire [31:0] pc_e, imm_dpl_e, os_e, ot_e, alu_result_e, dm_data_e, dm_addr_e, result_e;
     wire [5:0] op_e;
     wire [4:0] rs_e, rt_e, rd_e, wreg_e;
     wire [10:0] aux_e;
@@ -68,7 +68,7 @@ module processor(
     wire [3:0] wren_e;
 
     //write
-    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, alu_result_w, dm_data_w, result_w;
+    wire [31:0] pc_w, imm_dpl_w, os_w, ot_w, result_w;
     //wire [5:0] op_w;
     wire [25:0] addr_w;
     wire [4:0] wreg_w;
@@ -110,8 +110,8 @@ module processor(
     .rt(rt_e),
     .rd(rd_e),
     .aux(aux_e),
-    .os(os_e2),
-    .ot(ot_e2),
+    .os(os_e),
+    .ot(ot_e),
     .imm_dpl(imm_dpl_e),
     .wreg(wreg_e),
     .wren(wren_e),
@@ -126,8 +126,8 @@ module processor(
     .r_addr2(rt_d),
     .w_addr(wreg_w),
     .w_data(result_w),
-    .r_data1(os_d),
-    .r_data2(ot_d),
+    .r_data1(os_d1),
+    .r_data2(ot_d1),
     .r9(r9)
     );
 
@@ -135,7 +135,7 @@ module processor(
     .address(dm_addr_e[7:0]),
     .clk(sysclk),
     .wren(wren_e[0]),
-    .w_data(ot_e2[7:0]),
+    .w_data(ot_e[7:0]),
     .r_data(dm_data_e[7:0]),
     .dm532(dm532[7:0]),
     .dm900(dm900[7:0]),
@@ -146,7 +146,7 @@ module processor(
     .address(dm_addr_e[7:0]),
     .clk(sysclk),
     .wren(wren_e[1]),
-    .w_data(ot_e2[15:8]),
+    .w_data(ot_e[15:8]),
     .r_data(dm_data_e[15:8]),
     .dm532(dm532[15:8]),
     .dm900(dm900[15:8]),
@@ -157,7 +157,7 @@ module processor(
     .address(dm_addr_e[7:0]),
     .clk(sysclk),
     .wren(wren_e[2]),
-    .w_data(ot_e2[23:16]),
+    .w_data(ot_e[23:16]),
     .r_data(dm_data_e[23:16]),
     .dm532(dm532[23:16]),
     .dm900(dm900[23:16]),
@@ -168,7 +168,7 @@ module processor(
     .address(dm_addr_e[7:0]),
     .clk(sysclk),
     .wren(wren_e[3]),
-    .w_data(ot_e2[31:24]),
+    .w_data(ot_e[31:24]),
     .r_data(dm_data_e[31:24]),
     .dm532(dm532[31:24]),
     .dm900(dm900[31:24]),
@@ -199,8 +199,8 @@ module processor(
     .aux_in(aux_d),
     .imm_dpl_in(imm_dpl_d),
     .addr_in(addr_d),
-    .os_in(os_d),
-    .ot_in(ot_d),
+    .os_in(os_d2),
+    .ot_in(ot_d2),
     .pc_out(pc_e),
     .op_out(op_e),
     .rs_out(rs_e),
@@ -209,8 +209,8 @@ module processor(
     .aux_out(aux_e),
     .imm_dpl_out(imm_dpl_e),
     .addr_out(addr_e),
-    .os_out(os_e1),
-    .ot_out(ot_e1)
+    .os_out(os_e),
+    .ot_out(ot_e)
     );
 
     ew_reg ew_reg0(
@@ -218,13 +218,12 @@ module processor(
     .rstd(cpu_resetn),
     .pc_in(pc_e),
     .op_in(op_e),
-    .os_in(os_e2),
-    .ot_in(ot_e2),
+    .os_in(os_e),
+    .ot_in(ot_e),
     .addr_in(addr_e),
     .imm_dpl_in(imm_dpl_e),
     .wreg_in(wreg_e),
-    .alu_result_in(alu_result_e),
-    .dm_data_in(dm_data_e),
+    .result_in(result_e),
     .pc_out(pc_w),
     .op_out(op_w),
     .os_out(os_w),
@@ -232,26 +231,7 @@ module processor(
     .addr_out(addr_w),
     .imm_dpl_out(imm_dpl_w),
     .wreg_out(wreg_w),
-    .alu_result_out(alu_result_w),
-    .dm_data_out(dm_data_w)
-    );
-
-    forwarding forwarding0(
-    .clk(sysclk),
-    .reg_in(rs_e),
-    .operand_in(os_e1),
-    .wreg_b(wreg_w),
-    .w_data_b(result_w),
-    .operand_out(os_e2)
-    );
-
-    forwarding forwarding1(
-    .clk(sysclk),
-    .reg_in(rt_e),
-    .operand_in(ot_e1),
-    .wreg_b(wreg_w),
-    .w_data_b(result_w),
-    .operand_out(ot_e2)
+    .result_out(result_w)
     );
 
     stopper stopper0(
@@ -260,10 +240,10 @@ module processor(
     );
     
     choice choice0(
-    .op(op_w),
-    .alu_result(alu_result_w),
-    .dm_data(dm_data_w),
-    .result(result_w)
+    .op(op_e),
+    .alu_result(alu_result_e),
+    .dm_data(dm_data_e),
+    .result(result_e)
     );
 
     display_top display_top0(
@@ -287,7 +267,9 @@ module processor(
     assign hoge3 = (dm900==32'd97)?8'h2B:8'h2D;
     assign hoge4 = (dm532==32'h00000315)?8'h2B:8'h2D;
 
-    assign dm_addr_e = (os_e2+imm_dpl_e)>>>2;
+    assign dm_addr_e = (os_e+imm_dpl_e)>>>2;
+    assign os_d2 = (rs_d==5'd0)?32'h00000000:(rs_d==wreg_e)?result_e:(rs_d==wreg_w)?result_w:os_d1;
+    assign ot_d2 = (rt_d==5'd0)?32'h00000000:(rt_d==wreg_e)?result_e:(rt_d==wreg_w)?result_w:ot_d1;
 
     always @(posedge sysclk or negedge cpu_resetn)begin
         if(cpu_resetn==0)begin
