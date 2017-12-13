@@ -1,7 +1,7 @@
 module pc(
     input clk,
     input rstd,
-    input [1:0] jon_d,
+    input [1:0] stop_d,
     input [25:0] addr_d,//addr_w
     input [5:0] op,//op_w
     input [31:0] os,//os_w
@@ -38,7 +38,8 @@ module pc(
         else if(finish);
         else if(clk==1)begin
             //aboun pc
-            if(jon_d==2'b01)pc <= addr_d>>2;
+            if(stop_d==2'b01)pc <= addr_d>>2;
+            else if(stop_d==2'b10);
             else if(jump_count==2'd1)pc<=npc(op, os, ot, branch, nonbranch);
             else if(op==6'b111111)begin
                 finish<=1'b1;
@@ -46,7 +47,7 @@ module pc(
             end
             else pc <= pc + 32'd1;
             //about jump_count
-            if(jon_d[1]==1'd1)jump_count <= 2'd2;
+            if(stop_d==2'b11)jump_count <= 2'd1;
             else if(jump_count>2'd0)jump_count<=jump_count-2'd1;
             else ;
         end

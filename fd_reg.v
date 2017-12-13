@@ -2,7 +2,7 @@ module fd_reg(
     input clk,
     input rstd,
     input [5:0] op_d,
-    input [1:0] jon_d,
+    input [1:0] stop_d,
     input [31:0] pc_in,
     inout [31:0] ins_in,
     output [31:0] pc_out,
@@ -12,7 +12,7 @@ module fd_reg(
     reg finish;
     reg [31:0] pc, ins;
     reg [1:0] jump_count;
-    wire  stop;
+    wire  sow;
 
     always @(posedge clk or negedge rstd)begin
         if(rstd==0)begin
@@ -26,18 +26,18 @@ module fd_reg(
                 finish<=1'b1;
                 ins<=32'hdc000000;
             end
-            else if(stop)ins <= 32'hdc000000;
+            else if(sow)ins <= 32'hdc000000;
             else begin
                 pc <= pc_in;
                 ins <= ins_in;
             end
-            if(jon_d[1]==1'd1)jump_count <= 2'd2;
+            if(stop_d==2'b11)jump_count <= 2'd1;
             else if(jump_count>2'd0)jump_count<=jump_count-2'd1;
             else ;
         end
     end
 
-    assign stop = ((jon_d!=2'b00)|(jump_count>0))?1'b1:1'b0;
+    assign sow = ((|stop_d)|(jump_count>0))?1'b1:1'b0;
     assign pc_out = pc;
     assign ins_out = ins;
 endmodule
