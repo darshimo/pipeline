@@ -51,6 +51,7 @@ module processor(
 
     //fetch
     wire [31:0] pc_f, ins_f;
+    wire [1:0] stop_f;
 
     //decode
     wire [31:0] pc_d, ins_d, imm_dpl_d, os_d1, os_d2, ot_d1, ot_d2;
@@ -80,13 +81,15 @@ module processor(
     pc pc0(
     .clk(sysclk),
     .rstd(cpu_resetn),
-    .stop_d(stop_d),
+    .op_d(op_d),
     .addr_d(addr_d),
     .op(op_e1),
     .os(os_e1),
     .ot(ot_e1),
     .imm_dpl(imm_dpl_e1),
     .pc_in(pc_e1),
+    .stop_f(stop_f),
+    .stop_d(stop_d),
     .pc_out(pc_f)
     );
 
@@ -179,7 +182,7 @@ module processor(
     fd_reg fd_reg0(
     .clk(sysclk),
     .rstd(cpu_resetn),
-    .op_d(op_d),
+    .stop_f(stop_f),
     .stop_d(stop_d),
     .pc_in(pc_f),
     .ins_in(ins_f),
@@ -190,6 +193,7 @@ module processor(
     de_reg de_reg0(
     .clk(sysclk),
     .rstd(cpu_resetn),
+    .stop_d(stop_d),
     .pc_in(pc_d),
     .op_in(op_d),
     .rt_in(rt_d),
@@ -244,11 +248,6 @@ module processor(
     .wren(wren_e2)
     );
 
-    stopper stopper0(
-    .op(op_d),
-    .stop(stop_d)
-    );
-    
     choice choice0(
     .op(op_e2),
     .alu_result(alu_result_e2),
@@ -294,6 +293,6 @@ module processor(
         else count <= count + 31'd1;
     end
 
-initial $monitor("sysclk = %d, count = %d, pc_d = %d, op_d = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_d, op_d, r9, dm576, dm900, dm532, data_oled, total_count);
+initial $monitor("sysclk = %d, count = %d, pc_e1 = %d, op_e1 = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_e1, op_e1, r9, dm576, dm900, dm532, data_oled, total_count);
 
 endmodule

@@ -1,6 +1,7 @@
 module de_reg(
     input clk,
     input rstd,
+    input [1:0] stop_d,
     input [31:0] pc_in,
     input [5:0] op_in,
     input [4:0] rt_in,
@@ -23,18 +24,36 @@ module de_reg(
     reg [5:0] op;
     reg [4:0] rt, rd;
     reg [10:0] aux;
+    reg jump_count;
+    reg finish;
 
     always @(posedge clk or negedge rstd)begin
-        if(rstd==0)op<=6'b110111;
+        if(rstd==0)begin
+            op<=6'b110111;
+            jump_count<=1'b0;
+            finish<=1'b0;
+        end
+        else if(finish);
         else if(clk==1)begin
-            pc <= pc_in;
-            op <= op_in;
-            rt <= rt_in;
-            rd <= rd_in;
-            aux <= aux_in;
-            imm_dpl <= imm_dpl_in;
-            os <= os_in;
-            ot <= ot_in;
+            if(stop_d[1]==1'b1)begin
+                jump_count<=1'b1;
+                op <= 6'd55;
+            end
+            else if(jump_count==1'b1)jump_count<=1'b0;
+            else if(stop_d[0]==1'b1)begin
+                pc <= pc_in;
+                op <= op_in;
+                rt <= rt_in;
+                rd <= rd_in;
+                aux <= aux_in;
+                imm_dpl <= imm_dpl_in;
+                os <= os_in;
+                ot <= ot_in;
+            end
+            else begin
+                finish <= 1'b1;
+                op <= 6'd55;
+            end
         end
     end
 
