@@ -293,6 +293,6 @@ module processor(
         else count <= count + 31'd1;
     end
 
-initial $monitor("sysclk = %d, count = %d, pc_e1 = %d, op_e1 = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_e1, op_e1, r9, dm576, dm900, dm532, data_oled, total_count);
+//initial $monitor("sysclk = %d, count = %d, pc_e1 = %d, op_e1 = %d, r9(55) = %d, dm576(987) = %d, dm900(97) = %d, dm532(315) = %h, data_oled = %h, total = %d", sysclk, count, pc_e1, op_e1, r9, dm576, dm900, dm532, data_oled, total_count);
 
 endmodule

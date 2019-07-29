@@ -5,7 +5,7 @@ module fetch(
 
     reg [31:0] ins_mem [0:255];
 
-    initial $readmemb("sample4.bin",ins_mem);
+    initial $readmemb("bin/sample4.bin",ins_mem);
 
     assign ins = ins_mem[pc[7:0]];
 

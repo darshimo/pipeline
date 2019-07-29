@@ -18,8 +18,8 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`include "char_def.v"
-`include "state_def.v"
+`include "src/char_def.v"
+`include "src/state_def.v"
 
 module delay_gen(
     clk,
