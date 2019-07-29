@@ -1,5 +1,0 @@
-in vivado
-1. remove dump* from testbench
-2. remove monitor from processor
-3. write absolute pass of binary file in fetch
-4. in processor.v remove op_w from output and add it to wire
