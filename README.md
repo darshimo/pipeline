@@ -23,7 +23,9 @@ ISAの仕様は[この書籍](https://www.amazon.co.jp/dp/4339024376/ref=asap_bc
 
 #### 命令形式
 
-<img src="https://github.com/darshimo/pipeline/blob/images/isa_form.png" width=50%>
+<div align="center">""
+<img src="https://github.com/darshimo/pipeline/blob/images/isa_form.png" width=70%>
+</div>
 
 #### 一覧
 
