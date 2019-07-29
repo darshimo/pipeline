@@ -19,11 +19,11 @@ GTKwave
 
 ### ISA
 
-ISAの仕様は[この書籍](https://www.amazon.co.jp/dp/4339024376/ref=asap_bc?ie=UTF8)に準拠．
+ISAの仕様は「[実践 コンピュータアーキテクチャ](https://www.amazon.co.jp/dp/4339024376/ref=asap_bc?ie=UTF8)」（坂井修一，コロナ社）に準拠．
 
 #### 命令形式
 
-<div align="center">""
+<div align="center">
 <img src="https://github.com/darshimo/pipeline/blob/images/isa_form.png" width=70%>
 </div>
 
